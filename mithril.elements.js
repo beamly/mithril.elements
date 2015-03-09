@@ -13,7 +13,13 @@ var m = (function app(window, mithril) {
   var type = {}.toString;
 
   // save the mithril API
-  mithril = mithril || require('mithril');
+  // invoke mithril with a 'window' polyfill for node support
+  mithril = mithril || require('mithril').deps.factory({
+    'clearTimeout': clearTimeout,
+    'setTimeout': setTimeout,
+    'document': {},
+    'location': {}
+  });
   var redraw = mithril.redraw;
   var strategy = redraw.strategy;
 
