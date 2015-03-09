@@ -13,13 +13,7 @@ var m = (function app(window, mithril) {
   var type = {}.toString;
 
   // save the mithril API
-  // invoke mithril with a 'window' polyfill for node support
-  mithril = mithril || require('mithril').deps.factory({
-    'clearTimeout': clearTimeout,
-    'setTimeout': setTimeout,
-    'document': {},
-    'location': {}
-  });
+  mithril = mithril || require('mithril').deps.factory(window);
   var redraw = mithril.redraw;
   var strategy = redraw.strategy;
 
@@ -116,7 +110,12 @@ var m = (function app(window, mithril) {
   // build the new API
   return merge(m,mithril);
 
-})(typeof window != "undefined" ? window : {},m);
+})(typeof window != "undefined" ? window : {
+    'clearTimeout': clearTimeout,
+    'setTimeout': setTimeout,
+    'document': {},
+    'location': {}
+  },m);
 
 if (typeof module != "undefined" && module !== null && module.exports) module.exports = m;
 else if (typeof define == "function" && define.amd) define(function() {return m});
