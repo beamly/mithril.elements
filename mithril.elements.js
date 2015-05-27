@@ -33,23 +33,23 @@ var m = (function app(window, mithril) {
     return obj1;
   }
 
-  mithril.redraw = function(force) { 
+  mithril.redraw = function() { 
     // key into mithril page lifecycle
     if (strategy()==='all'){ 
       controllers={}; 
     } 
     lastId=0;
-    return redraw(force); 
+    return redraw.apply(null,arguments); 
   }; 
 
   mithril.redraw.strategy = strategy;
 
-  var elements = {}, controllers={},lastId=0;
+  var controllers={},lastId=0;
   var m = function(module, attrs, children) { 
     var tag = module.tag || module;
     var args = [tag].concat([].slice.call(arguments,1));
     var cell = mithril.apply(null,args);
-    var element = elements[cell.tag];
+    var element = m.elements[cell.tag];
     // pass through if not registered or escaped
     if (element && tag[0]!=='$') {
       attrs = merge(module.attrs || {}, cell.attrs);
@@ -87,9 +87,12 @@ var m = (function app(window, mithril) {
     this.state = state;
   }
   
+  // expose registration dictionary
+  m.elements = {};
+
   var sId=0;
   m.element = function(root, module){
-    if (type.call(root) !== STRING) throw new Error('selector m.element(selector, module) should be a string');
+    if (type.call(root) !== STRING) throw new Error('tag m.element(tag, module) should be a string');
 
     // all elements have controllers
     module.controller = module.controller || DefaultController;
@@ -104,7 +107,7 @@ var m = (function app(window, mithril) {
 
     // nothing more to do here, element initialization is lazily
     // deferred to first redraw
-    return (elements[root] = module);
+    return (m.elements[root] = module);
   };
 
   // build the new API
